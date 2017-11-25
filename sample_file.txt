@@ -1,0 +1,6 @@
+-- Key/value pairs holding info
+param1 = 12
+param2 =13
+param3    = "string"
+-- this data is important
+important_data = [1, 2, 3, 4]

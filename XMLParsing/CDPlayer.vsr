@@ -1,0 +1,586 @@
+<modelFile format="8" xmlns="http://www.iar.com/visualSTATE/2011/Modelfile">
+
+  <topstate excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##1" name="CDPlayerTopstate">
+    <expl></expl>
+    <alias></alias>
+    <position bottom="411" left="61" right="485" top="93"/>
+    <stateProperties labelHeight="34" wrapText="true">
+      <properties value="114689"/>
+    </stateProperties>
+    <elements>
+      <actionsFolder guid="72531ED4-4C35-435F-A7F6-1D439AEEDD82" name="root">
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##2" name="EjectCD" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##3" name="ShowTrackNumber" returnType="VS_VOID">
+          <expl></expl>
+          <arguments>
+            <argument name="trackNo" type="VS_INT"/>
+          </arguments>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##4" name="ShutDownCDPlayer" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##5" name="StartCDDrive" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##6" name="StartCDPlayer" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##7" name="StartPlayingTrack" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##8" name="StopCDDrive" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+        <actionFunction definition="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##9" name="StopPlayingTrack" returnType="VS_VOID">
+          <expl></expl>
+        </actionFunction>
+      </actionsFolder>
+      <constantsFolder guid="CF0E1ACB-8303-47B5-BDA4-EBF63ED688EB" name="root">
+        <constant definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##10" name="FIRST_TRACK" type="VS_UINT8">
+          <expl></expl>
+          <value>1</value>
+        </constant>
+        <constant definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##11" name="NOF_TRACKS" type="VS_INT">
+          <expl></expl>
+          <value>3</value>
+        </constant>
+      </constantsFolder>
+      <eventsFolder guid="B4588764-8867-480E-A138-16FDD9D4A515" name="root">
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##12" name="evBackKey">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##13" name="evCDInserted">
+          <expl>This event should be send when the cd is inserted or taken out.
+The argument indicates if it was inserted.
+If 0 then it was taken out else it was inserted.	</expl>
+          <arguments>
+            <argument name="bInserted" type="VS_BOOL"/>
+          </arguments>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##14" name="evForwardKey">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##15" name="evOpen">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##16" name="evPlayKey">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##17" name="evPowerOffKey">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##18" name="evPowerOnKey">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##19" name="evStopKey">
+          <expl></expl>
+        </event>
+        <event definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##20" name="evTrackEnd">
+          <expl></expl>
+        </event>
+      </eventsFolder>
+      <eventGroupsFolder guid="844A4CD3-C715-4671-A3BF-98FE0D3DD6EE" name="root"/>
+      <externVariablesFolder guid="FDD9A3A2-04D7-423E-A8FC-F221E52008F5" name="root"/>
+      <internVariablesFolder guid="879E0AEA-A800-496F-A6A0-31544D71C36B" name="root">
+        <internVariable definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##21" name="currentTrack" type="VS_UINT8">
+          <expl></expl>
+          <value>0</value>
+        </internVariable>
+        <internVariable definition="true" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##22" name="lastTrack" type="VS_UINT8">
+          <expl></expl>
+          <value>10</value>
+        </internVariable>
+      </internVariablesFolder>
+      <signalsFolder guid="98B53431-7EE8-4A64-8D0B-8CB5DF91447E" name="root"/>
+    </elements>
+    <regions>
+      <region excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##23" name="Region" offPage="true">
+        <expl></expl>
+        <placement column="0" row="0"/>
+        <size height="284" width="423"/>
+        <view colorNumber="7" pagesHorz="1" pagesVert="1"/>
+        <diagramInformation textDisplayNote="preserve" textDisplayState="preserve" textDisplayTransition="preserve"/>
+        <notes>
+          <note>
+            <position bottom="157" left="13" right="673" top="17"/>
+            <properties value="1073741824"/>
+            <text>This is another example of a simplified CD player.
+This example is used for showing an example of integration with Altia Design.</text>
+          </note>
+          <note>
+            <position bottom="1467" left="74" right="1499" top="1333"/>
+            <properties value="1073741824"/>
+            <text>Normally you should have the number of tracks outside the visualSTATE model. We are placing it inside for simplicity.</text>
+          </note>
+        </notes>
+        <vertices>
+          <pseudoStateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##24" kind="initialState" name="_InitialState0">
+            <expl></expl>
+            <alias></alias>
+            <position bottom="63" left="929" right="972" top="21"/>
+            <properties value="114689"/>
+            <externalTransitions>
+              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##39" source="CDPlayerTopstate.Region._InitialState0" target="CDPlayerTopstate.Region.CDPlayerOff">
+                <expl></expl>
+                <alias></alias>
+                <transitionProperties>
+                  <position bottom="68" left="984" right="1027" top="25"/>
+                  <properties value="809894017"/>
+                  <routePoints>
+                    <routePoint x="971" y="42"/>
+                    <routePoint x="1069" y="74"/>
+                  </routePoints>
+                </transitionProperties>
+              </externalTransition>
+            </externalTransitions>
+          </pseudoStateVertex>
+          <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##25" name="CDPlayerOn">
+            <expl></expl>
+            <alias></alias>
+            <position bottom="1659" left="29" right="2291" top="206"/>
+            <stateProperties labelHeight="121" wrapText="true">
+              <properties value="114689"/>
+            </stateProperties>
+            <entryReactions>
+              <entryReaction guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##42">
+                <expl></expl>
+                <alias></alias>
+                <actionSide>
+                  <actionCall actionFunction="StartCDPlayer"/>
+                </actionSide>
+              </entryReaction>
+            </entryReactions>
+            <exitReactions>
+              <exitReaction guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##43">
+                <expl></expl>
+                <alias></alias>
+                <actionSide>
+                  <actionCall actionFunction="ShutDownCDPlayer"/>
+                </actionSide>
+              </exitReaction>
+            </exitReactions>
+            <externalTransitions>
+              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##40" source="CDPlayerTopstate.Region.CDPlayerOn" target="CDPlayerTopstate.Region.CDPlayerOff">
+                <expl></expl>
+                <alias></alias>
+                <transitionProperties>
+                  <position bottom="146" left="690" right="1008" top="93"/>
+                  <properties value="809894017"/>
+                  <routePoints>
+                    <routePoint x="470" y="207"/>
+                    <routePoint x="1069" y="95"/>
+                  </routePoints>
+                </transitionProperties>
+                <conditionSide>
+                  <trigger name="evPowerOffKey"/>
+                </conditionSide>
+              </externalTransition>
+            </externalTransitions>
+            <regions>
+              <region excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##26" name="rPlayerStatus" offPage="false">
+                <expl></expl>
+                <placement column="0" row="0"/>
+                <size height="1331" width="1447"/>
+                <view colorNumber="7" pagesHorz="1" pagesVert="1"/>
+                <diagramInformation textDisplayNote="preserve" textDisplayState="preserve" textDisplayTransition="preserve"/>
+                <vertices>
+                  <pseudoStateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##27" kind="initialState" name="_InitialState1">
+                    <expl></expl>
+                    <alias></alias>
+                    <position bottom="428" left="76" right="119" top="385"/>
+                    <properties value="114689"/>
+                    <externalTransitions>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##44" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus._InitialState1" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.NotPlaying">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="493" left="76" right="119" top="451"/>
+                          <properties value="809894017"/>
+                          <routePoints>
+                            <routePoint x="111" y="421"/>
+                            <routePoint x="148" y="408"/>
+                          </routePoints>
+                        </transitionProperties>
+                      </externalTransition>
+                    </externalTransitions>
+                  </pseudoStateVertex>
+                  <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##28" name="NotPlaying">
+                    <expl></expl>
+                    <alias></alias>
+                    <position bottom="506" left="148" right="1257" top="387"/>
+                    <stateProperties labelHeight="97" wrapText="true">
+                      <properties value="1638401"/>
+                    </stateProperties>
+                    <externalTransitions>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##45" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.NotPlaying" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="665" left="193" right="620" top="548"/>
+                          <properties value="809894017"/>
+                          <routePoints>
+                            <routePoint x="192" y="506"/>
+                            <routePoint x="192" y="709"/>
+                          </routePoints>
+                        </transitionProperties>
+                        <conditionSide>
+                          <trigger name="evPlayKey"/>
+                          <positiveSynchronizations>
+                            <positiveState>CDPlayerTopstate.Region.CDPlayerOn.rCDStatus.CDPresent</positiveState>
+                          </positiveSynchronizations>
+                        </conditionSide>
+                        <actionSide>
+                          <assignment>lastTrack = NOF_TRACKS</assignment>
+                          <assignment>currentTrack = FIRST_TRACK</assignment>
+                        </actionSide>
+                      </externalTransition>
+                    </externalTransitions>
+                  </stateVertex>
+                  <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##29" name="Playing">
+                    <expl></expl>
+                    <alias></alias>
+                    <position bottom="1434" left="111" right="1386" top="709"/>
+                    <stateProperties labelHeight="119" wrapText="true">
+                      <properties value="1638401"/>
+                    </stateProperties>
+                    <entryReactions>
+                      <entryReaction guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##52">
+                        <expl></expl>
+                        <alias></alias>
+                        <actionSide>
+                          <actionCall actionFunction="StartCDDrive"/>
+                        </actionSide>
+                      </entryReaction>
+                    </entryReactions>
+                    <exitReactions>
+                      <exitReaction guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##53">
+                        <expl></expl>
+                        <alias></alias>
+                        <actionSide>
+                          <actionCall actionFunction="StopCDDrive"/>
+                          <actionCall actionFunction="ShowTrackNumber">
+                            <actionCallArguments>
+                              <actionCallArgument token="0"/>
+                            </actionCallArguments>
+                          </actionCall>
+                        </actionSide>
+                      </exitReaction>
+                    </exitReactions>
+                    <externalTransitions>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##46" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.NotPlaying">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="631" left="1008" right="1223" top="584"/>
+                          <properties value="809894016"/>
+                          <routePoints>
+                            <routePoint x="1098" y="709"/>
+                            <routePoint x="1071" y="506"/>
+                          </routePoints>
+                        </transitionProperties>
+                        <conditionSide>
+                          <trigger name="evStopKey"/>
+                        </conditionSide>
+                      </externalTransition>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##47" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.NotPlaying">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="671" left="764" right="976" top="540"/>
+                          <properties value="809894016"/>
+                          <routePoints>
+                            <routePoint x="758" y="709"/>
+                            <routePoint x="751" y="506"/>
+                          </routePoints>
+                        </transitionProperties>
+                        <conditionSide>
+                          <trigger name="evTrackEnd"/>
+                          <guards>
+                            <guard>currentTrack == lastTrack</guard>
+                          </guards>
+                        </conditionSide>
+                      </externalTransition>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##48" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.NotPlaying">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="646" left="1217" right="1416" top="586"/>
+                          <properties value="809894017"/>
+                          <routePoints>
+                            <routePoint x="1374" y="709"/>
+                            <routePoint x="1230" y="506"/>
+                          </routePoints>
+                        </transitionProperties>
+                        <conditionSide>
+                          <trigger name="evOpen"/>
+                        </conditionSide>
+                      </externalTransition>
+                    </externalTransitions>
+                    <regions>
+                      <region excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##30" name="Region1" offPage="false">
+                        <expl></expl>
+                        <placement column="0" row="0"/>
+                        <size height="606" width="1275"/>
+                        <view colorNumber="7" pagesHorz="1" pagesVert="1"/>
+                        <diagramInformation textDisplayNote="preserve" textDisplayState="preserve" textDisplayTransition="preserve"/>
+                        <vertices>
+                          <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##31" name="PlayingATrack">
+                            <expl></expl>
+                            <alias></alias>
+                            <position bottom="1024" left="205" right="1314" top="855"/>
+                            <stateProperties labelHeight="110" wrapText="true">
+                              <properties value="1638401"/>
+                            </stateProperties>
+                            <entryReactions>
+                              <entryReaction guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##58">
+                                <expl></expl>
+                                <alias></alias>
+                                <actionSide>
+                                  <actionCall actionFunction="StartPlayingTrack"/>
+                                  <actionCall actionFunction="ShowTrackNumber">
+                                    <actionCallArguments>
+                                      <actionCallArgument token="currentTrack"/>
+                                    </actionCallArguments>
+                                  </actionCall>
+                                </actionSide>
+                              </entryReaction>
+                            </entryReactions>
+                            <exitReactions>
+                              <exitReaction guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##59">
+                                <expl></expl>
+                                <alias></alias>
+                                <actionSide>
+                                  <actionCall actionFunction="StopPlayingTrack"/>
+                                </actionSide>
+                              </exitReaction>
+                            </exitReactions>
+                            <externalTransitions>
+                              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##54" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack">
+                                <expl></expl>
+                                <alias></alias>
+                                <transitionProperties>
+                                  <position bottom="1270" left="974" right="1293" top="1096"/>
+                                  <properties value="809894017"/>
+                                  <routePoints>
+                                    <routePoint x="959" y="1024"/>
+                                    <routePoint x="1058" y="1082"/>
+                                    <routePoint x="1137" y="1086"/>
+                                    <routePoint x="1257" y="1024"/>
+                                  </routePoints>
+                                </transitionProperties>
+                                <conditionSide>
+                                  <trigger name="evForwardKey"/>
+                                  <guards>
+                                    <guard>currentTrack != lastTrack</guard>
+                                  </guards>
+                                </conditionSide>
+                                <actionSide>
+                                  <assignment>currentTrack = currentTrack + 1</assignment>
+                                </actionSide>
+                              </externalTransition>
+                              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##55" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack">
+                                <expl></expl>
+                                <alias></alias>
+                                <transitionProperties>
+                                  <position bottom="1298" left="607" right="906" top="1101"/>
+                                  <properties value="809894017"/>
+                                  <routePoints>
+                                    <routePoint x="884" y="1024"/>
+                                    <routePoint x="773" y="1092"/>
+                                    <routePoint x="688" y="1082"/>
+                                    <routePoint x="652" y="1024"/>
+                                  </routePoints>
+                                </transitionProperties>
+                                <conditionSide>
+                                  <trigger name="evBackKey"/>
+                                  <guards>
+                                    <guard>currentTrack != FIRST_TRACK</guard>
+                                  </guards>
+                                </conditionSide>
+                                <actionSide>
+                                  <assignment>currentTrack = currentTrack - 1</assignment>
+                                </actionSide>
+                              </externalTransition>
+                              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##56" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack">
+                                <expl></expl>
+                                <alias></alias>
+                                <transitionProperties>
+                                  <position bottom="1312" left="176" right="493" top="1101"/>
+                                  <properties value="809894017"/>
+                                  <routePoints>
+                                    <routePoint x="410" y="1024"/>
+                                    <routePoint x="351" y="1096"/>
+                                    <routePoint x="269" y="1092"/>
+                                    <routePoint x="266" y="1024"/>
+                                  </routePoints>
+                                </transitionProperties>
+                                <conditionSide>
+                                  <trigger name="evTrackEnd"/>
+                                  <guards>
+                                    <guard>currentTrack  != lastTrack</guard>
+                                  </guards>
+                                </conditionSide>
+                                <actionSide>
+                                  <assignment>currentTrack = currentTrack + 1</assignment>
+                                </actionSide>
+                              </externalTransition>
+                            </externalTransitions>
+                            <regions>
+                              <region excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##32" name="Region1" offPage="false">
+                                <expl></expl>
+                                <placement column="0" row="0"/>
+                                <size height="59" width="1109"/>
+                                <view colorNumber="7" pagesHorz="1" pagesVert="1"/>
+                                <diagramInformation textDisplayNote="preserve" textDisplayState="preserve" textDisplayTransition="preserve"/>
+                                <vertices/>
+                              </region>
+                            </regions>
+                          </stateVertex>
+                          <pseudoStateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##33" kind="initialState" name="_InitialState2">
+                            <expl></expl>
+                            <alias></alias>
+                            <position bottom="881" left="125" right="167" top="838"/>
+                            <properties value="114689"/>
+                            <externalTransitions>
+                              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##57" source="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1._InitialState2" target="CDPlayerTopstate.Region.CDPlayerOn.rPlayerStatus.Playing.Region1.PlayingATrack">
+                                <expl></expl>
+                                <alias></alias>
+                                <transitionProperties>
+                                  <position bottom="948" left="184" right="203" top="912"/>
+                                  <properties value="809894016"/>
+                                  <routePoints>
+                                    <routePoint x="167" y="860"/>
+                                    <routePoint x="205" y="868"/>
+                                  </routePoints>
+                                </transitionProperties>
+                              </externalTransition>
+                            </externalTransitions>
+                          </pseudoStateVertex>
+                        </vertices>
+                      </region>
+                    </regions>
+                  </stateVertex>
+                </vertices>
+              </region>
+              <region excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##34" name="rCDStatus" offPage="false">
+                <expl></expl>
+                <placement column="1" row="0"/>
+                <size height="1331" width="815"/>
+                <view colorNumber="7" pagesHorz="1" pagesVert="1"/>
+                <diagramInformation textDisplayNote="preserve" textDisplayState="preserve" textDisplayTransition="preserve"/>
+                <vertices>
+                  <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##35" name="NoCD">
+                    <expl></expl>
+                    <alias></alias>
+                    <position bottom="584" left="1638" right="1808" top="478"/>
+                    <stateProperties labelHeight="32" wrapText="true">
+                      <properties value="1638401"/>
+                    </stateProperties>
+                    <externalTransitions>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##49" source="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus.NoCD" target="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus.CDPresent">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="773" left="1425" right="1734" top="701"/>
+                          <properties value="809894016"/>
+                          <routePoints>
+                            <routePoint x="1674" y="584"/>
+                            <routePoint x="1674" y="864"/>
+                          </routePoints>
+                        </transitionProperties>
+                        <conditionSide>
+                          <trigger name="evCDInserted">
+                            <argument>bInserted</argument>
+                          </trigger>
+                          <guards>
+                            <guard>bInserted != 0</guard>
+                          </guards>
+                        </conditionSide>
+                      </externalTransition>
+                    </externalTransitions>
+                  </stateVertex>
+                  <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##36" name="CDPresent">
+                    <expl></expl>
+                    <alias></alias>
+                    <position bottom="969" left="1638" right="1808" top="864"/>
+                    <stateProperties labelHeight="32" wrapText="true">
+                      <properties value="1638401"/>
+                    </stateProperties>
+                    <externalTransitions>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##50" source="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus.CDPresent" target="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus.NoCD">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="802" left="1776" right="1937" top="675"/>
+                          <properties value="809894016"/>
+                          <routePoints>
+                            <routePoint x="1771" y="864"/>
+                            <routePoint x="1771" y="584"/>
+                          </routePoints>
+                        </transitionProperties>
+                        <conditionSide>
+                          <trigger name="evOpen"/>
+                        </conditionSide>
+                        <actionSide>
+                          <actionCall actionFunction="EjectCD"/>
+                        </actionSide>
+                      </externalTransition>
+                    </externalTransitions>
+                  </stateVertex>
+                  <pseudoStateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##37" kind="shallowHistoryState" name="_ShallowHistoryState0">
+                    <expl></expl>
+                    <alias></alias>
+                    <position bottom="425" left="1539" right="1581" top="383"/>
+                    <properties value="114689"/>
+                    <externalTransitions>
+                      <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##51" source="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus._ShallowHistoryState0" target="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus.NoCD">
+                        <expl></expl>
+                        <alias></alias>
+                        <transitionProperties>
+                          <position bottom="442" left="1598" right="1617" top="406"/>
+                          <properties value="809894016"/>
+                          <routePoints>
+                            <routePoint x="1582" y="405"/>
+                            <routePoint x="1638" y="495"/>
+                          </routePoints>
+                        </transitionProperties>
+                      </externalTransition>
+                    </externalTransitions>
+                  </pseudoStateVertex>
+                </vertices>
+              </region>
+            </regions>
+          </stateVertex>
+          <stateVertex excluded="false" guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##38" name="CDPlayerOff">
+            <expl></expl>
+            <alias></alias>
+            <position bottom="143" left="1069" right="1429" top="37"/>
+            <stateProperties labelHeight="32" wrapText="true">
+              <properties value="1638401"/>
+            </stateProperties>
+            <externalTransitions>
+              <externalTransition guid="24BE41C7-8F58-4F0F-A8A2-2CA826866353-0##41" source="CDPlayerTopstate.Region.CDPlayerOff" target="CDPlayerTopstate.Region.CDPlayerOn.rCDStatus._ShallowHistoryState0">
+                <expl></expl>
+                <alias></alias>
+                <transitionProperties>
+                  <position bottom="124" left="1529" right="1879" top="71"/>
+                  <properties value="809894016"/>
+                  <routePoints>
+                    <routePoint x="1429" y="93"/>
+                    <routePoint x="1561" y="384"/>
+                  </routePoints>
+                </transitionProperties>
+                <conditionSide>
+                  <trigger name="evPowerOnKey"/>
+                </conditionSide>
+              </externalTransition>
+            </externalTransitions>
+          </stateVertex>
+        </vertices>
+      </region>
+    </regions>
+  </topstate>
+
+</modelFile>

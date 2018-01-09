@@ -2,6 +2,7 @@
 {- stack
   script
   --resolver lts-9.12
+  --package base
   --package bytestring
   --package xeno
 -}
@@ -10,12 +11,13 @@ import qualified Data.ByteString as S
 import qualified Data.ByteString.Char8 as SC
 import qualified Xeno.DOM as XML
 import Text.Printf
+import Data.List
 
 main = do
   file <- S.readFile "CDPlayer.vsr"
   case (XML.parse file) of
     Left err -> print err
-    Right node -> do
+    Right nModelFile -> do
       let sTopstate = SC.pack "topstate"
           sModelFile = SC.pack "modelFile"
           sElements = SC.pack "elements"
@@ -32,11 +34,13 @@ main = do
           sRegions = SC.pack "regions"
           sRegion = SC.pack "region"
           sVertices = SC.pack "vertices"
-      if (XML.name node /= sModelFile)
-      then printf "Unexpected node name '%s', expected 'modelFile'\n" (SC.unpack (XML.name node))
+      if (XML.name nModelFile /= sModelFile)
+      then printf "Unexpected node name '%s', expected 'modelFile'\n" (SC.unpack (XML.name nModelFile))
       else do
-        mapM_ print $ XML.attributes node
-        let children1 = XML.children node
-        mapM_ (print . XML.name) children1
-        let children2 = XML.children $ head children1
-        mapM_ (print . XML.name) children2
+        case find (elemType sTopstate) (XML.children nModelFile) of
+          Nothing -> printf "Error! Expected to find node %s\n" (SC.unpack sTopstate)
+          Just nTopState -> print "Found it"
+
+
+elemType :: S.ByteString -> XML.Node -> Bool
+elemType s n = (XML.name n) == s

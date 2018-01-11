@@ -17,3 +17,6 @@ typedef struct {
     uint16_t e_shnum;
     uint16_t e_shstrndx;
 } Elf_Header_t;
+
+
+const size_t ELF_HEADER_SIZE = sizeof(Elf_Header_t);

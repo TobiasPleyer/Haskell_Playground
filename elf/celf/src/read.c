@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         int fd;
         printf("Filename: %s\n", argv[1]);
         fd = open(argv[1], O_RDONLY);
-        elf_base = mmap(NULL, 128, PROT_READ, MAP_PRIVATE, fd, 0);
+        elf_base = mmap(NULL, ELF_HEADER_SIZE, PROT_READ, MAP_PRIVATE, fd, 0);
         close(fd);
     }
     {
@@ -36,5 +36,5 @@ int main(int argc, char *argv[])
         }
         printf("Executable has entry point address %lx\n", header->e_entry);
     }
-    return munmap(elf_base, 128);
+    return munmap(elf_base, ELF_HEADER_SIZE);
 }

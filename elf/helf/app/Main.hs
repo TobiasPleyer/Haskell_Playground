@@ -10,7 +10,6 @@ import ElfTypes
 main :: IO ()
 main = do
   filename <- head <$> getArgs
-  (ptr, rawsize, offset, size) <- mmapFilePtr filename ReadOnly Nothing
-  header <- peek (castPtr ptr) :: IO ElfHeader2
-  print header
-  printf "The entry address of %s is %lx\n" filename (h_entry2 header)
+  (ptr,_,_,_) <- mmapFilePtr filename ReadOnly Nothing
+  header <- peek ptr :: IO ElfHeader2
+  printf "The entry address of %s is 0x%lx\n" filename (h_entry2 header)

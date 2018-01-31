@@ -75,4 +75,8 @@ main = do
   filename <- head <$> getArgs
   withFile filename ReadMode $ \hIn ->
     withFile "out.txt" WriteMode $ \hOut ->
-      runEffect $ (samples (PB.fromHandle hIn)) >-> extract >-> aggregate >-> PB.toHandle hOut
+      runEffect (
+        (samples (PB.fromHandle hIn))
+        >-> extract
+        >-> aggregate
+        >-> PB.toHandle hOut)

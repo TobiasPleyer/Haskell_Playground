@@ -34,7 +34,7 @@ instance ToNamedRecord Sample where
 
 
 samples :: Monad m => Producer B.ByteString m () -> Producer (Either String Sample) m ()
-samples p = PCsv.decodeByName p
+samples = PCsv.decodeByName
 
 
 convert :: Pipe (Either String Sample) B.ByteString IO ()
@@ -42,7 +42,9 @@ convert = do
   sample <- await
   case sample of
     Left s -> lift $ putStrLn s
-    Right s -> yield $ BC.pack $ show s
+    Right s -> do
+        yield $ BC.pack $ show s ++ "\n"
+        convert
 
 
 main :: IO ()

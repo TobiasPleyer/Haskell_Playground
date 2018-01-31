@@ -1,4 +1,4 @@
-Time,Category1,Category2
+timestamp,category1,category2
 0.01,1,0
 0.02,0,1
 0.03,0,1

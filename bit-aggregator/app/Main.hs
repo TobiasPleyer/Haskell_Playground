@@ -33,9 +33,21 @@ instance ToNamedRecord Sample where
   toNamedRecord = namedRecord . sampleRec
 
 
+samples :: Monad m => Producer B.ByteString m () -> Producer (Either String Sample) m ()
+samples p = PCsv.decodeByName p
+
+
+convert :: Pipe (Either String Sample) B.ByteString IO ()
+convert = do
+  sample <- await
+  case sample of
+    Left s -> lift $ putStrLn s
+    Right s -> yield $ BC.pack $ show s
+
+
 main :: IO ()
 main = do
   filename <- head <$> getArgs
   withFile filename ReadMode $ \hIn ->
     withFile "out.txt" WriteMode $ \hOut ->
-      runEffect $ PB.fromHandle hIn >-> PB.toHandle hOut
+      runEffect $ (samples (PB.fromHandle hIn)) >-> convert >-> PB.toHandle hOut

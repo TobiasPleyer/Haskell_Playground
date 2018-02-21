@@ -7,7 +7,7 @@ import qualified Pipes.Prelude as PP
 
 
 main :: IO ()
-main = (((print 2 >>= \r -> return (Pure r)) >>= \p' -> return (go'' p')) >>= \p'' -> return ((\b' -> go (Pure b')) +>> p'')) >>= driver
+main = runEffect (M (((print 2 >>= \r -> return (Pure r)) >>= \p' -> return (go'' p')) >>= \p'' -> return ((\b' -> go (Pure b')) +>> p'')))
   where
     go p = case p of
         Request a' fa  -> Request a' (\a  -> go (fa  a ))
@@ -24,9 +24,4 @@ main = (((print 2 >>= \r -> return (Pure r)) >>= \p' -> return (go'' p')) >>= \p
         Respond b  fb' -> Respond b  (\b' -> go'' (fb' b'))
         M          m   -> M (m >>= \p' -> return (go'' p'))
         Pure    r      -> (\_ -> Request () (\a -> go' (Pure a))) r
-    driver p = case p of
-        Request v _ -> closed v
-        Respond v _ -> closed v
-        M       m   -> m >>= driver
-        Pure    r   -> return r
     loop = Request () (\a -> go' (Pure a))

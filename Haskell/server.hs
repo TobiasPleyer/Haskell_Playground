@@ -14,32 +14,44 @@ import qualified Data.Map.Strict as M
 import Data.Maybe
 
 
-type Body = String
-type Pattern = String
-data Request = Request { requestType :: Pattern, requestBody :: Body }
-type Handler = (Pattern -> Maybe Action)
+type Args = [String]
+type Command = String
+
 data ServerData = SInt Int
                 | SString String
-type Environment = M.Map String ServerData
-type Action = (Environment -> Body -> IO ())
-data ServerState = ServerState {
-                      serverHandlers :: [Handler]
-                    , serverEnvironment :: Environment
-                    }
-type Server = StateT ServerState IO
 
 instance Show ServerData where
   show (SInt i) = show i
   show (SString s) = s
 
+isString :: ServerData -> Bool
+isString (SString _) = True
+isString _           = False
+
+isInt :: ServerData -> Bool
+isInt (SInt _) = True
+isInt _        = False
+
+type Environment = M.Map String ServerData
+
+data ServerState = ServerState {
+                      serverHandlers :: [Handler]
+                    , serverEnvironment :: Environment
+                    }
+
+type Server = StateT ServerState IO
+type Action = (Args -> Server ())
+type Handler = (Command -> Maybe Action)
+
+
 newServerState :: ServerState
 newServerState = ServerState [] M.empty
 
 
-addHandler :: Pattern -> Action -> Server ()
-addHandler pat act = do
+addHandler :: Command -> Action -> Server ()
+addHandler cmd act = do
   ServerState hs env <- get
-  let h = \p -> if p == pat then Just act else Nothing
+  let h = \c -> if c == cmd then Just act else Nothing
   put $ ServerState (h:hs) env
 
 
@@ -59,30 +71,28 @@ setIntData k v = do
   put $ s{ serverEnvironment=env' }
 
 
-handleRequest :: Request -> Server Action
-handleRequest request = do
+actionFromCommand :: Command -> Server Action
+actionFromCommand cmd = do
   ServerState registeredHandlers _ <- get
-  let action = getAction registeredHandlers request
+  let
+    action = getAction registeredHandlers cmd
   return action
     where
-      getAction = foldr tryHandler defaultHandler
-      tryHandler handler cont req
-        | Just a <- handler (requestType req) = a
-        | otherwise = cont req
-      defaultHandler = \_ _ _ ->  putStrLn "Error - No handler found"
+      getAction = foldr tryAction defaultAction
+      tryAction handler cont cmd
+        | Just a <- handler cmd = a
+        | otherwise = cont cmd
+      defaultAction = \_ _ ->  liftIO $ putStrLn "Unknown command"
 
 
 serverLoop :: Server ()
 serverLoop = do
   liftIO $ putStr "Request: "
   line <- liftIO getLine
-  let (r:bs) = words line
-      body = unwords bs
-      request = Request r body
-  unless (r == "quit") $ do
-    action <- handleRequest request
-    env <- liftM serverEnvironment get
-    liftIO $ action env body
+  let (cmd:args) = words line
+  unless (cmd == "quit") $ do
+    action <- actionFromCommand cmd
+    action args
     serverLoop
 
 
@@ -90,19 +100,45 @@ serve :: Server () -> IO ()
 serve srv = evalStateT (srv >> serverLoop) newServerState
 
 
+envAction :: Action
+envAction _ = do
+  ServerState _ env <- get
+  let
+    assocs = M.assocs env
+    strings = filter (isString . snd) assocs
+    ints = filter (isInt . snd) assocs
+  liftIO (do
+      putStrLn "Strings"
+      forM_ strings (\(k,v) -> putStrLn ("  " ++ show k ++ ": " ++ show v))
+      putStrLn "Integers"
+      forM_ ints (\(k,v) -> putStrLn ("  " ++ show k ++ ": " ++ show v)))
+
+
 getAction :: Action
-getAction env body = putStrLn $ "Value: " ++ (show value) ++ "   (via GET)"
-  where value = M.findWithDefault (SString "N/A") body env
+getAction args = do
+  env <- liftM serverEnvironment get
+  let value = M.findWithDefault (SString "N/A") (head args) env
+  liftIO $ putStrLn $ "Value: " ++ (show value)
 
 
-postAction :: Action
-postAction env body = putStrLn $ "Value: " ++ (show value) ++ "   (via POST)"
-  where value = M.findWithDefault (SString "N/A") body env
+putIntAction :: Action
+putIntAction args = do
+  let
+    key = args !! 0
+    value = read (args !! 1) :: Int
+  setIntData key value
+
+
+putStringAction :: Action
+putStringAction args = do
+  let
+    key = args !! 0
+    value = args !! 1
+  setStringData key value
 
 
 fooAction :: Action
-fooAction env body = putStrLn $ "Value: " ++ (show value) ++ "   (via FOO)"
-  where value = M.findWithDefault (SString "N/A") body env
+fooAction _ = liftIO $ putStrLn $ "He who asks for FOO will get a BAR!"
 
 
 toyServer :: Server ()
@@ -110,8 +146,10 @@ toyServer = do
   setIntData "varX" 7
   setIntData "varY" 42
   setStringData "server_name" "Toy Server"
+  addHandler "ENV" envAction
   addHandler "GET" getAction
-  addHandler "POST" postAction
+  addHandler "PUTI" putIntAction
+  addHandler "PUTS" putStringAction
   addHandler "FOO" fooAction
 
 

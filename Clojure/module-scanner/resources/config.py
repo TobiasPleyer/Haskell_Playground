@@ -27,16 +27,15 @@ class Value(IntEnum):
 # The actual dictionary we are interested in. We will assume the name, equals
 # sign and opening curly brance are all part of the first line
 IMPORTANT_DICT = {
-    'resources.module_1':               Value.C,
+    'resources.module_1':              Value.C,
     'resources.sub_pack_1.module_1_1': Value.C,
     'resources.sub_pack_1.module_1_2': Value.C,
     'resources.sub_pack_1.module_1_3': Value.C,
     'resources.sub_pack_1.module_1_4': Value.C,
     'resources.sub_pack_1.module_1_5': Value.C,
-    'resources.sub_pack_1.module_1_6': Value.C,
     'resources.sub_pack_1.module_1_7': Value.C,
     'resources.sub_pack_1.module_1_8': Value.C,
-    'resources.module_2':               Value.C,
+    'resources.module_2':              Value.C,
     'resources.sub_pack_2.module_2_1': Value.C,
     'resources.sub_pack_2.module_2_2': Value.C,
     'resources.sub_pack_2.module_2_3': Value.C,
@@ -46,9 +45,11 @@ IMPORTANT_DICT = {
     'resources.sub_pack_3.module_3_2': Value.C,
     'resources.sub_pack_3.module_3_3': Value.C,
     'resources.sub_pack_3.module_3_4': Value.C,
-    'resources.module_3':               Value.C,
-    'resources.module_4':               Value.C,
-    'resources.module_5':               Value.C,
+    'resources.sub_pack_3.module_3_5': Value.C,
+    'resources.module_3':              Value.C,
+    'resources.module_4':              Value.C,
+    'resources.module_5':              Value.C,
+    'resources.module_6':              Value.D,
 }
 
 # More data following the dictionary

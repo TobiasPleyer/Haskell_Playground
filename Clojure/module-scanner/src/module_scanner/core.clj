@@ -6,6 +6,7 @@
 
 (def not-start (partial not= "IMPORTANT_DICT = {"))
 (def not-end (partial not= "}"))
+(def find-args "-type f -name *.py")
 
 (defn- get-modules
   "Extract those lines which list the module dictionary entries"
@@ -40,5 +41,8 @@
   (let [package-dir (first args)
         config-file (str package-dir "/config.py")
         registered-modules (with-open [rdr (io/reader config-file)]
-                             (reduce conj [] (map mk-path (get-modules (line-seq rdr)))))]
-    (doall (for [m registered-modules] (println m)))))
+                             (reduce conj [] (map mk-path (get-modules (line-seq rdr)))))
+        package-modules (:out (apply sh "find" package-dir (str/split find-args #" ")))]
+    (println package-modules)
+    (println registered-modules)
+    (shutdown-agents)))

@@ -5,11 +5,25 @@
             [clojure.set :as set])
   (:use [clojure.java.shell :only [sh]]))
 
+
 (def not-start (partial not= "IMPORTANT_DICT = {"))
 (def not-end (partial not= "}"))
 (def find-args "-type f -name *.py")
-(def blacklist [(fn [module] (boolean (re-find #"__init__$" module)))
-                (fn [module] (boolean (re-find #"config$" module)))])
+;; When the blacklist and blacklist-functions are applied the Python files have
+;; already been stripped of '.py' so don't assume '.py' to be present
+(def blacklist-functions
+  [(fn [module] (re-find #"__init__$" module))])
+(def blacklist-func (apply juxt blacklist-functions))
+(def blacklist
+  ["resources/config"
+   "resources/sub_pack_1/unimportant"
+   "resources/safe"])
+
+
+(defn in?
+  "true if coll contains elm"
+  [coll elm]
+  (boolean (some #(= elm %) coll)))
 
 (defn- get-modules
   "Extract those lines which list the module dictionary entries"
@@ -43,17 +57,26 @@
   (with-open [rdr (io/reader config-file)]
     (reduce conj #{} (map mk-path (get-modules (line-seq rdr))))))
 
+(defn- blacklisted?
+  [module]
+  (let [bf (not (every? (comp false? boolean) (blacklist-func module)))
+        bl (in? blacklist module)]
+    (or bf bl)))
+
+(defn- not-blacklisted?
+  [module]
+  (not (blacklisted? module)))
+
 (defn- get-have-set
   "Takes the path to the Python package of interest and generates a set of
   contained modules, excluding all files for which a blacklist function returns
   true."
   [package-dir]
-  (let [blacklisted? (fn [module] (not-any? true? ((apply juxt blacklist) module)))]
-    (reduce conj #{}
-            (filter blacklisted?
-              (map #(str/replace % #"\.py$" "")
-                (str/split-lines
-                  (:out (apply sh "find" package-dir (str/split find-args #" ")))))))))
+  (reduce conj #{}
+          (filter not-blacklisted?
+            (map #(str/replace % #"\.py$" "")
+              (str/split-lines
+                (:out (apply sh "find" package-dir (str/split find-args #" "))))))))
 
 
 (defn -main

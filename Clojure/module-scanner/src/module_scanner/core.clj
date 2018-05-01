@@ -6,18 +6,21 @@
   (:use [clojure.java.shell :only [sh]]))
 
 
+(def relative-config-path "/config.py")
+(def unwanted-prefix #"^resources/")
 (def not-start (partial not= "IMPORTANT_DICT = {"))
 (def not-end (partial not= "}"))
 (def find-args "-type f -name *.py")
 ;; When the blacklist and blacklist-functions are applied the Python files have
 ;; already been stripped of '.py' so don't assume '.py' to be present
 (def blacklist-functions
-  [(fn [module] (re-find #"__init__$" module))])
+  [(fn [module] (re-find #"__init__$" module))
+   (fn [module] (re-find #"_config$" module))])
 (def blacklist-func (apply juxt blacklist-functions))
 (def blacklist
-  ["resources/config"
-   "resources/sub_pack_1/unimportant"
-   "resources/safe"])
+  ["config"
+   "sub_pack_1/unimportant"
+   "safe"])
 
 
 (defn in?
@@ -55,7 +58,7 @@
   Python modules within that configuration."
   [config-file]
   (with-open [rdr (io/reader config-file)]
-    (reduce conj #{} (map mk-path (get-modules (line-seq rdr))))))
+    (reduce conj #{} (map #(str/replace (mk-path %) unwanted-prefix "") (get-modules (line-seq rdr))))))
 
 (defn- blacklisted?
   [module]
@@ -74,7 +77,11 @@
   [package-dir]
   (reduce conj #{}
           (filter not-blacklisted?
-            (map #(str/replace % #"\.py$" "")
+            (map #(str/replace
+                    (str/replace
+                      (str/replace % package-dir "")
+                      #"^/" "")
+                    #"\.py$" "")
               (str/split-lines
                 (:out (apply sh "find" package-dir (str/split find-args #" "))))))))
 
@@ -84,7 +91,7 @@
   configuration file"
   [& args]
   (let [package-dir (first args)
-        config-file (str package-dir "/config.py")
+        config-file (str package-dir relative-config-path)
         module-want-set (get-want-set config-file)
         module-have-set (get-have-set package-dir)
         missing-modules (set/difference module-have-set module-want-set)
@@ -103,5 +110,6 @@
               (do
                 (println "The following modules do not exist any longer:")
                 (doall (for [m superfluous-modules] (println (str "  - " m)))))
-              nil)))
-    (shutdown-agents)))
+              nil)
+          (System/exit 1)))
+    (System/exit 0)))

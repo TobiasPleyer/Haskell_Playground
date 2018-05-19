@@ -1,0 +1,30 @@
+#-------------------------------------------
+#-- Garage Door ----------------------------
+#------------------------------------------- 
+%events
+    rope_pulled;
+    key_turned;
+    open_limit_reached;
+    close_limit_reached;
+    timer_expired;
+
+%actions
+    blink_on;
+    blink_off;
+    start_timer;
+
+%states # The states of the SM with inner properties
+    Open    { entry: @blink_off,
+              entry: @start_timer };
+    Closed  { entry: @blink_off   };
+    Opening { entry: @blink_on    };
+    Closing { entry: @blink_on    };
+
+%transitions
+    Open    -> Closing | timer_expired;
+    Closed  -> Opening | rope_pulled;
+                       | key_turned;
+    Opening -> Open    | open_limit_reached;
+    Closing -> Closed  | close_limit_reached;
+            -> Opening | rope_pulled;
+                       | key_turned;

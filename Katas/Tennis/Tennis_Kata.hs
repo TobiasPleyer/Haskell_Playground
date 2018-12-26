@@ -66,8 +66,8 @@ getUserInput cmds = do
     c <- getChar
     let
         onBadInput = putStrLn ("\nError! Allowed values: " ++ (intersperse ',' (map fst cmds))) >> (getUserInput cmds)
-        testChar c (c',cmd) next = if (c == c') then cmd else next
-        action = foldr (testChar c) onBadInput cmds
+        testChar (c',cmd) next = if (c == c') then cmd else next
+        action = foldr testChar onBadInput cmds
     action
 
 main = do

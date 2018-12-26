@@ -64,11 +64,10 @@ nextScore (Values v1 v2) p
 getUserInput :: [(Char,IO Point)] -> IO Point
 getUserInput cmds = do
     c <- getChar
-    let
-        onBadInput = putStrLn ("\nError! Allowed values: " ++ (intersperse ',' (map fst cmds))) >> (getUserInput cmds)
-        testChar (c',cmd) next = if (c == c') then cmd else next
-        action = foldr testChar onBadInput cmds
-    action
+    let mAction = lookup c cmds
+    case mAction of
+        Just action -> action
+        Nothing -> putStrLn ("\nError! Allowed values: " ++ (intersperse ',' (map fst cmds))) >> (getUserInput cmds)
 
 main = do
   hSetBuffering stdin NoBuffering

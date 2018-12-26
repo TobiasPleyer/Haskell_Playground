@@ -6,6 +6,7 @@
 -}
 
 import Data.Char
+import Data.List (intersperse)
 import System.Exit (exitSuccess)
 import System.IO
 
@@ -60,22 +61,26 @@ nextScore (Values v1 v2) p
     | p == P2 = Values v1 (nextValue v2)
 
 
-getUserInput :: IO Point
-getUserInput = do
+getUserInput :: [(Char,IO Point)] -> IO Point
+getUserInput cmds = do
     c <- getChar
-    if c == '1' then return P1
-    else if c == '2' then return P2
-         else if c == 'q' then exitSuccess
-              else do putStrLn "Allowed values: q, 1, 2"
-                      getUserInput
+    let
+        onBadInput = putStrLn ("\nError! Allowed values: " ++ (intersperse ',' (map fst cmds))) >> (getUserInput cmds)
+        testChar c (c',cmd) next = if (c == c') then cmd else next
+        action = foldr (testChar c) onBadInput cmds
+    action
 
 main = do
   hSetBuffering stdin NoBuffering
-  loop initialScore
+  loop input_cmds initialScore
   where
     initialScore = Values Love Love
-    loop score = do
+    input_cmds = [
+        ('1', return P1),
+        ('2', return P2),
+        ('q', exitSuccess)]
+    loop cmds score = do
         putStrLn ""
         putStrLn (show score)
-        point <- getUserInput
-        loop (nextScore score point)
+        point <- getUserInput cmds
+        loop cmds (nextScore score point)

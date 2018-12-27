@@ -220,6 +220,37 @@ def bind_eithert(m: EitherT, k: BindFunc):
     lambda a: a if isLeft(a) else k(a.unwrap()).unwrap())))
 
 
+class IO():
+    def __init__(self, action):
+        self._action = action
+
+    def __or__(self, k):
+        return bind(self, BindFunc(k))
+
+    def __rshift__(self, k):
+        return bind(self, BindFunc(lambda _: k))
+
+    def unwrap(self):
+        return self._action
+
+    def run(self):
+        return self._action()
+
+    def __str__(self):
+        v_str = str(self._action)
+        return f"IO({v_str})"
+
+    def __repr__(self):
+        return self.__str__()
+
+
+@overload('bind')
+def bind_io(m: IO, k: BindFunc):
+    # IO is a delayed computation (aka action), so binding IO means building up
+    # a new, combined delayed computation
+    return IO(lambda: k(m.run()).run())
+
+
 if __name__ == '__main__':
     m1 = just(2)
     m2 = just(0)
@@ -275,3 +306,10 @@ if __name__ == '__main__':
           (lambda x: h(x,eme) |
           (lambda x: h(x,em3) |
           (lambda x: h(x,em4)))))
+
+    io1 = IO(lambda: print('hello'))
+    io2 = IO(lambda: print('hello again'))
+    io3 = IO(lambda: print('bye'))
+    io = (io1 >> io2 >> io3)
+    print(io)
+    io.run()

@@ -187,6 +187,39 @@ def bind_writert(m: WriterT, k: BindFunc):
     lambda x2: ret((x2[0], x1[1] + x2[1])))))))
 
 
+class EitherT():
+    def __init__(self, ret, value):
+        self._ret = ret
+        self._value = value
+
+    def __or__(self, k):
+        return bind(self, BindFunc(k))
+
+    def __rshift__(self, k):
+        return bind(self, BindFunc(lambda _: k))
+
+    def unwrap(self):
+        return self._value
+
+    def get_return(self):
+        return self._ret
+
+    def __str__(self):
+        v_str = str(self._value)
+        return f"EitherT({v_str})"
+
+    def __repr__(self):
+        return self.__str__()
+
+
+@overload('bind')
+def bind_eithert(m: EitherT, k: BindFunc):
+    ret = m.get_return()
+    return EitherT(ret,
+    bind(m.unwrap(), BindFunc(
+    lambda a: a if isLeft(a) else k(a.unwrap()).unwrap())))
+
+
 if __name__ == '__main__':
     m1 = just(2)
     m2 = just(0)
@@ -229,3 +262,16 @@ if __name__ == '__main__':
     j1 |(
     lambda x: j2 if x>0 else j3)) >>
     j4)
+
+    em1 = EitherT(just, just(right(1)))
+    em2 = EitherT(just, just(right(2)))
+    em3 = EitherT(just, just(right(3)))
+    em4 = EitherT(just, just(right(4)))
+    eme = EitherT(just, just(left('Error')))
+    def h(x,cont):
+        print(x)
+        return cont
+    print(em1 |
+          (lambda x: h(x,eme) |
+          (lambda x: h(x,em3) |
+          (lambda x: h(x,em4)))))

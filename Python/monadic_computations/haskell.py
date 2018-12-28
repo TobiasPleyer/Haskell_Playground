@@ -55,19 +55,9 @@ class BindFunc:
         return self._func(a)
 
 
-def returnMaybe(value):
-    return Maybe(Maybe.Just, value)
-
-
-class Maybe():
-    Nothing = 0
-    Just = 1
-    def __init__(self, kind, value=None):
-        self._kind = kind
+class Monad:
+    def __init__(self, value):
         self._value = value
-
-    def get_return(self):
-        return returnMaybe
 
     def __or__(self, k):
         return bind(self, BindFunc(k))
@@ -86,6 +76,27 @@ class Maybe():
 
     def __repr__(self):
         return self.__str__()
+
+
+def returnMaybe(value):
+    return Maybe(Maybe.Just, value)
+
+
+class Maybe(Monad):
+    Nothing = 0
+    Just = 1
+    def __init__(self, kind, value=None):
+        self._kind = kind
+        super().__init__(value)
+
+    def get_return(self):
+        return returnMaybe
+
+    def __str__(self):
+        if self._kind == Maybe.Just:
+            return f"Just({self._value})"
+        else:
+            return f"Nothing"
 
 
 def isNothing(e):
@@ -116,33 +127,21 @@ def returnEither(value):
     return Either(Either.Right, value)
 
 
-class Either():
+class Either(Monad):
     Left = 0
     Right = 1
     def __init__(self, kind, value):
         self._kind = kind
-        self._value = value
+        super().__init__(value)
 
     def get_return(self):
         return returnEither
-
-    def __or__(self, k):
-        return bind(self, BindFunc(k))
-
-    def __rshift__(self, k):
-        return bind(self, BindFunc(lambda _: k))
-
-    def unwrap(self):
-        return self._value
 
     def __str__(self):
         if self._kind == Either.Left:
             return f"Left({self._value})"
         else:
             return f"Right({self._value})"
-
-    def __repr__(self):
-        return self.__str__()
 
 
 def isLeft(e):
@@ -169,29 +168,17 @@ def bind_either(m: Either, k: BindFunc):
         return k(m.unwrap())
 
 
-class WriterT():
+class WriterT(Monad):
     def __init__(self, returnM, value):
         self._returnM = returnM
-        self._value = value
+        super().__init__(value)
 
     def get_return(self):
         return lambda value: WriterT(self._returnM, self._returnM((value,[])))
 
-    def __or__(self, k):
-        return bind(self, BindFunc(k))
-
-    def __rshift__(self, k):
-        return bind(self, BindFunc(lambda _: k))
-
-    def unwrap(self):
-        return self._value
-
     def __str__(self):
         v_str = str(self._value)
         return f"WriterT({v_str})"
-
-    def __repr__(self):
-        return self.__str__()
 
 
 @overload('bind')
@@ -203,29 +190,17 @@ def bind_writert(m: WriterT, k: BindFunc):
     lambda x2: inner_ret((x2[0], x1[1] + x2[1])))))))
 
 
-class EitherT():
+class EitherT(Monad):
     def __init__(self, returnM, value):
         self._returnM = returnM
-        self._value = value
+        super().__init__(value)
 
     def get_return(self):
         return lambda value: EitherT(self._returnM, self._returnM(right(value)))
 
-    def __or__(self, k):
-        return bind(self, BindFunc(k))
-
-    def __rshift__(self, k):
-        return bind(self, BindFunc(lambda _: k))
-
-    def unwrap(self):
-        return self._value
-
     def __str__(self):
         v_str = str(self._value)
         return f"EitherT({v_str})"
-
-    def __repr__(self):
-        return self.__str__()
 
 
 @overload('bind')
@@ -240,21 +215,12 @@ def returnIO(value):
     return IO(lambda: value)
 
 
-class IO():
+class IO(Monad):
     def __init__(self, value):
-        self._value = value
+        super().__init__(value)
 
     def get_return(self):
         return returnIO
-
-    def __or__(self, k):
-        return bind(self, BindFunc(k))
-
-    def __rshift__(self, k):
-        return bind(self, BindFunc(lambda _: k))
-
-    def unwrap(self):
-        return self._value
 
     def run(self):
         return self._value()
@@ -262,9 +228,6 @@ class IO():
     def __str__(self):
         v_str = str(self._value)
         return f"IO({v_str})"
-
-    def __repr__(self):
-        return self.__str__()
 
 
 @overload('bind')

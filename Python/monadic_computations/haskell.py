@@ -69,10 +69,7 @@ class Monad:
         return self._value
 
     def __str__(self):
-        if self._kind == Maybe.Nothing:
-            return "Nothing"
-        else:
-            return f"Just({self._value})"
+        return "Monad Base"
 
     def __repr__(self):
         return self.__str__()

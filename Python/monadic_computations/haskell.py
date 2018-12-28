@@ -185,9 +185,9 @@ class WriterT(Monad):
 def bind_writert(m: WriterT, k: BindFunc):
     inner_ret = m.unwrap().get_return()
     return WriterT(inner_ret,
-    bind(m.unwrap(), BindFunc(
-    lambda x1: bind(k(x1[0]).unwrap(), BindFunc(
-    lambda x2: inner_ret((x2[0], x1[1] + x2[1])))))))
+        m.unwrap() |(
+        lambda x1: k(x1[0]).unwrap() |(
+        lambda x2: inner_ret((x2[0], x1[1] + x2[1])))))
 
 
 class EitherT(Monad):
@@ -207,8 +207,8 @@ class EitherT(Monad):
 def bind_eithert(m: EitherT, k: BindFunc):
     inner_ret = m.unwrap().get_return()
     return EitherT(inner_ret,
-    bind(m.unwrap(), BindFunc(
-    lambda a: inner_ret(a) if isLeft(a) else k(a.unwrap()).unwrap())))
+        m.unwrap() |(
+        lambda a: inner_ret(a) if isLeft(a) else k(a.unwrap()).unwrap()))
 
 
 def returnIO(value):
@@ -307,6 +307,7 @@ if __name__ == '__main__':
     # the stacked EitherT monad and the second one is the monoid instance for
     # the stacked WriterT monad
     def shell(cmd):
+        print(f"Now running: {cmd}")
         process = run(cmd, stdout=PIPE, stderr=STDOUT, shell=True)
         if process.returncode > 0:
             return (left(None), [process.stdout])
@@ -319,7 +320,5 @@ if __name__ == '__main__':
     ok3 = EitherT(wtio, WriterT(mkio, IO(lambda: shell("echo 'Even better'; exit 0"))))
     nok1 = EitherT(wtio, WriterT(mkio, IO(lambda: shell("echo 'Error' >&2 ; exit 1"))))
     full_action = ok1 >> ok2 >> nok1 >> ok3
-    print("----------")
-    print(full_action)
-    print("----------")
+    print("-------")
     print(full_action.unwrap().unwrap().run())

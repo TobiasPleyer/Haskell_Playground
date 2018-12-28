@@ -1,4 +1,6 @@
 from typing import Any, Callable, Tuple
+from subprocess import run, PIPE, STDOUT
+from functools import partial
 
 
 class OverloadException(Exception):
@@ -53,12 +55,19 @@ class BindFunc:
         return self._func(a)
 
 
+def returnMaybe(value):
+    return Maybe(Maybe.Just, value)
+
+
 class Maybe():
     Nothing = 0
     Just = 1
     def __init__(self, kind, value=None):
         self._kind = kind
         self._value = value
+
+    def get_return(self):
+        return returnMaybe
 
     def __or__(self, k):
         return bind(self, BindFunc(k))
@@ -103,12 +112,19 @@ def bind_maybe(m: Maybe, k: BindFunc):
         return k(m.unwrap())
 
 
+def returnEither(value):
+    return Either(Either.Right, value)
+
+
 class Either():
     Left = 0
     Right = 1
     def __init__(self, kind, value):
         self._kind = kind
         self._value = value
+
+    def get_return(self):
+        return returnEither
 
     def __or__(self, k):
         return bind(self, BindFunc(k))
@@ -154,9 +170,12 @@ def bind_either(m: Either, k: BindFunc):
 
 
 class WriterT():
-    def __init__(self, ret, value):
-        self._ret = ret
+    def __init__(self, returnM, value):
+        self._returnM = returnM
         self._value = value
+
+    def get_return(self):
+        return lambda value: WriterT(self._returnM, self._returnM((value,[])))
 
     def __or__(self, k):
         return bind(self, BindFunc(k))
@@ -166,9 +185,6 @@ class WriterT():
 
     def unwrap(self):
         return self._value
-
-    def get_return(self):
-        return self._ret
 
     def __str__(self):
         v_str = str(self._value)
@@ -180,17 +196,20 @@ class WriterT():
 
 @overload('bind')
 def bind_writert(m: WriterT, k: BindFunc):
-    ret = m.get_return()
-    return WriterT(ret,
+    inner_ret = m.unwrap().get_return()
+    return WriterT(inner_ret,
     bind(m.unwrap(), BindFunc(
     lambda x1: bind(k(x1[0]).unwrap(), BindFunc(
-    lambda x2: ret((x2[0], x1[1] + x2[1])))))))
+    lambda x2: inner_ret((x2[0], x1[1] + x2[1])))))))
 
 
 class EitherT():
-    def __init__(self, ret, value):
-        self._ret = ret
+    def __init__(self, returnM, value):
+        self._returnM = returnM
         self._value = value
+
+    def get_return(self):
+        return lambda value: EitherT(self._returnM, self._returnM(right(value)))
 
     def __or__(self, k):
         return bind(self, BindFunc(k))
@@ -200,9 +219,6 @@ class EitherT():
 
     def unwrap(self):
         return self._value
-
-    def get_return(self):
-        return self._ret
 
     def __str__(self):
         v_str = str(self._value)
@@ -214,15 +230,22 @@ class EitherT():
 
 @overload('bind')
 def bind_eithert(m: EitherT, k: BindFunc):
-    ret = m.get_return()
-    return EitherT(ret,
+    inner_ret = m.unwrap().get_return()
+    return EitherT(inner_ret,
     bind(m.unwrap(), BindFunc(
-    lambda a: a if isLeft(a) else k(a.unwrap()).unwrap())))
+    lambda a: inner_ret(a) if isLeft(a) else k(a.unwrap()).unwrap())))
+
+
+def returnIO(value):
+    return IO(lambda: value)
 
 
 class IO():
-    def __init__(self, action):
-        self._action = action
+    def __init__(self, value):
+        self._value = value
+
+    def get_return(self):
+        return returnIO
 
     def __or__(self, k):
         return bind(self, BindFunc(k))
@@ -231,13 +254,13 @@ class IO():
         return bind(self, BindFunc(lambda _: k))
 
     def unwrap(self):
-        return self._action
+        return self._value
 
     def run(self):
-        return self._action()
+        return self._value()
 
     def __str__(self):
-        v_str = str(self._action)
+        v_str = str(self._value)
         return f"IO({v_str})"
 
     def __repr__(self):
@@ -312,4 +335,28 @@ if __name__ == '__main__':
     io3 = IO(lambda: print('bye'))
     io = (io1 >> io2 >> io3)
     print(io)
-    io.run()
+    io.unwrap()
+
+    # This is the big boy: A monadic stack, stacking WriterT and EitherT on top
+    # of the IO monad
+    # First the IO action, it must already follow the conventions of the stack,
+    # i.e. return a tuple of (Either a, [String]). The first entry is used by
+    # the stacked EitherT monad and the second one is the monoid instance for
+    # the stacked WriterT monad
+    def shell(cmd):
+        process = run(cmd, stdout=PIPE, stderr=STDOUT, shell=True)
+        if process.returncode > 0:
+            return (left(None), [process.stdout])
+        return (right(None), [process.stdout])
+
+    mkio = lambda x: IO(lambda: x)
+    wtio = lambda x: WriterT(mkio, mkio(x))
+    ok1 = EitherT(wtio, WriterT(mkio, IO(lambda: shell("echo 'OK'; exit 0"))))
+    ok2 = EitherT(wtio, WriterT(mkio, IO(lambda: shell("echo 'Also OK'; exit 0"))))
+    ok3 = EitherT(wtio, WriterT(mkio, IO(lambda: shell("echo 'Even better'; exit 0"))))
+    nok1 = EitherT(wtio, WriterT(mkio, IO(lambda: shell("echo 'Error' >&2 ; exit 1"))))
+    full_action = ok1 >> ok2 >> nok1 >> ok3
+    print("----------")
+    print(full_action)
+    print("----------")
+    print(full_action.unwrap().unwrap().run())

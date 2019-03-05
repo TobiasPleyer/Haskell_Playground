@@ -27,7 +27,7 @@ helpLines =
 -- Types
 
 
-newtype TodoState = TS { getTodos :: [String] }
+newtype TodoState = TS { getTodos :: [String] } deriving (Show)
 type TodoMonad = StateT TodoState IO
 type Cmd = String
 type Msg = String
@@ -38,16 +38,15 @@ type Msg = String
 
 main :: IO ()
 main = do
+    let initialState = TS []
     putStrLn $ unlines helpLines
-    evalStateT prompt (TS [])
+    evalStateT prompt initialState
 
-printTodo :: (Int, String) -> TodoMonad ()
-printTodo (n, todo) = liftIO $ putStrLn (show n ++ ": " ++ todo)
+printTodo :: (Int, String) -> IO ()
+printTodo (n, todo) = putStrLn (show n ++ ": " ++ todo)
 
 printTodos :: TodoMonad ()
-printTodos = do
-    todos <- getTodos <$> get
-    mapM_ printTodo (zip [0..] todos)
+printTodos = mapM_ (liftIO . printTodo) =<< (zip [0..] . getTodos) <$> get
 
 prompt :: TodoMonad ()
 prompt = do
